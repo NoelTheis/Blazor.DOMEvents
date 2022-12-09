@@ -1,0 +1,106 @@
+﻿@using Blazor.DOMEvents.Demo
+
+@inject DOMEventManager dom
+
+@implements IAsyncDisposable
+
+
+<div id="ClickMe" style="width: 400px; height: 200px; background-color: @(Clicked ? "lightgreen" : "lightcoral")">
+    Click me!
+</div>
+
+<div style="font-weight:bold;">
+    Mouse
+</div>
+<div style="display:flex; flex-direction:column">
+    Target ID: @ID<br/>
+    X: @X<br/>
+    Y: @Y<br/>
+    <div style="display:flex;">
+        <button style="margin: 10px" onclick="@(async () => await AddMouseListener())">Attach</button>
+        <button style="margin: 10px" onclick="@(async () => await RemoveMouseListener())">Remove</button>
+    </div>
+</div>
+
+<div style="font-weight:bold;">
+    Keyboard
+</div>
+<div style="display:flex; flex-direction:column">
+    Key: @Key
+    <div style="display:flex;">
+        <button style="margin: 10px" onclick="@(async () => await AddKeyboardListener())">Attach</button>
+        <button style="margin: 10px" onclick="@(async () => await RemoveKeyboardListener())">Remove</button>
+    </div>
+</div>
+
+@code{
+    private string Key = "";
+
+    private int X;
+
+    private int Y;
+
+    private string ID = "";
+
+    private bool Clicked;
+
+    private DomEventListener<KeyboardEventArgs>? keyboardListener;
+
+    private DomEventListener<ExtendedMouseEventArgs>? mouseListener;
+
+    private async Task AddMouseListener()
+    {
+        if (mouseListener is not null)
+            return;
+
+        var doc = await dom.Document.Value;
+
+        mouseListener = await doc.AddEventListener<ExtendedMouseEventArgs>("mousedown");
+
+        mouseListener.EventRaised += async (s, e) =>
+        {
+            ID = e.Target.ID;
+            X = e.X;
+            Y = e.Y;
+            Clicked = ID == "ClickMe";
+            await InvokeAsync(StateHasChanged);
+        };
+    }
+
+    private async Task AddKeyboardListener()
+    {
+        if (keyboardListener is not null)
+            return;
+
+        var doc = await dom.Document.Value;
+
+        keyboardListener = await doc.AddEventListener<KeyboardEventArgs>("keydown");
+
+        keyboardListener.EventRaised += async (s, e) =>
+        {
+            Key = e.Key;
+            await InvokeAsync(StateHasChanged);
+        };
+    }
+
+    private async Task RemoveMouseListener()
+    {
+        if (mouseListener is not null)
+            await mouseListener.DisposeAsync();
+
+        mouseListener = null;
+    }
+
+    private async Task RemoveKeyboardListener()
+    {
+        if (keyboardListener is not null)
+            await keyboardListener.DisposeAsync();
+
+        keyboardListener = null;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await dom.DisposeAsync();
+    }
+}
