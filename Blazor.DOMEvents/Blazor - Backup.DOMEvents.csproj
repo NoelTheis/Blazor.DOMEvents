@@ -21,8 +21,8 @@
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/NoelTheis/Blazor.DOMEvents</PackageProjectUrl>
     <Description>This project contains a razor class library with the goal to provide methods that allow you to easily attach event listeners to your DOM in both Blazor Server and WASM.</Description>
+    <PackageLicenseFile>C:\Users\DENOTHE\source\repos\Blazor.DOMEvents\LICENSE</PackageLicenseFile>
     <RepositoryUrl>https://github.com/NoelTheis/Blazor.DOMEvents</RepositoryUrl>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
   </PropertyGroup>
 
   <ItemGroup>
